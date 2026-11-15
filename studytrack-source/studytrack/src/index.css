@@ -199,3 +199,42 @@ textarea.field {
     transition-duration: 0.001ms !important;
   }
 }
+
+
+/* Remove blue tap highlight on mobile and WebView */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove default browser focus outline */
+*:focus {
+  outline: none !important;
+}
+
+/* Remove unwanted focus shadows */
+*:focus:not(:focus-visible) {
+  box-shadow: none !important;
+}
+
+/* Remove blue selection background */
+::selection {
+  background: transparent;
+  color: inherit;
+}
+
+::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* Remove tap highlight from interactive elements */
+button,
+a,
+input,
+textarea,
+select,
+[role="button"],
+[onclick] {
+  -webkit-tap-highlight-color: transparent;
+}
+
