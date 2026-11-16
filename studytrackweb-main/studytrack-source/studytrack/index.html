@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>StudyTrack - Your Study. Your Progress.</title>
+    <meta name="description" content="StudyTrack records and explains your daily study time. Works offline. Your data stays on your device." />
+    <meta name="theme-color" content="#F7F9F5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121814" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="StudyTrack" />
+    <link rel="icon" href="./favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <script>
+      // Apply the saved theme before first paint to avoid a light/dark flash.
+      try {
+        var t = localStorage.getItem('studytrack.theme') || 'system';
+        var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
+    <style>
+      /* Launch splash: shown before any JavaScript runs, so the logo is on screen immediately. */
+      html { background: #f7f9f5; }
+      html.dark { background: #121814; }
+      #boot { position: fixed; inset: 0; display: grid; place-items: center; background: #f7f9f5; z-index: 100; transition: opacity 0.5s ease; }
+      .dark #boot { background: #121814; }
+      #boot.boot-out { opacity: 0; pointer-events: none; }
+      #boot img { width: min(78vw, 360px); height: auto; animation: bootlogo 0.9s cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+      #boot .b-dark { display: none; }
+      .dark #boot .b-dark { display: block; }
+      .dark #boot .b-light { display: none; }
+      @keyframes bootlogo { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+      @media (prefers-reduced-motion: reduce) { #boot img { animation: none; } #boot { transition-duration: 0.01ms; } }
+    </style>
+  </head>
+  <body>
+    <div id="boot" role="img" aria-label="StudyTrack">
+      <img class="b-light" src="./brand/lockup-light.png" alt="" width="360" height="84" />
+      <img class="b-dark" src="./brand/lockup-dark.png" alt="" width="360" height="84" />
+    </div>
+    <div id="root"></div>
+    <noscript>StudyTrack needs JavaScript to run.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,513 @@
+@import 'tailwindcss';
+
+/* Dark mode is driven by the `dark` class on <html> (set before first paint in index.html). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens. Colours are CSS variables so the theme and the chosen accent can change at
+ * runtime (see hooks/useTheme.ts). `inline` makes Tailwind utilities read the variable directly.
+ */
+@theme inline {
+  --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-display: 'Literata Variable', ui-serif, Georgia, 'Times New Roman', serif;
+
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-gold: var(--gold);
+  --color-danger: var(--danger);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --paper: #f7f9f5;
+    --card: #ffffff;
+    --sunken: #eef2ec;
+    --line: #e2e8df;
+    --ink: #17211b;
+    --muted: #5d6b62;
+    --gold: #a9730f;
+    --danger: #b3402f;
+    --on-accent: #ffffff;
+    /* Accent defaults (overwritten at runtime by useApplyTheme). */
+    --accent: #4f7f5a;
+    --accent-strong: #3b6446;
+    --accent-soft: #e1ecdc;
+  }
+  :root.dark {
+    color-scheme: dark;
+    --paper: #121814;
+    --card: #1a221d;
+    --sunken: #222c26;
+    --line: #2c3830;
+    --ink: #edf3ef;
+    --muted: #9aa99f;
+    --gold: #e2b24c;
+    --danger: #ea8272;
+    --on-accent: #0f1a13;
+    --accent: #8cbf96;
+    --accent-strong: #a9d6b2;
+    --accent-soft: #243228;
+  }
+
+  /* Never let the document itself scroll sideways. */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background: var(--paper);
+    overflow-x: clip;
+  }
+  body {
+    margin: 0;
+    max-width: 100%;
+    overflow-x: clip;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  #root {
+    max-width: 100%;
+  }
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+  /* Long words, URLs and subject names wrap instead of pushing a container wider. */
+  h1,
+  h2,
+  h3,
+  p,
+  li,
+  label,
+  summary {
+    overflow-wrap: anywhere;
+  }
+  /* A grid track defaults to `min-width: auto`, so one wide child (a chart, a long word) can widen
+     the whole column past the screen. Letting grid children shrink is the root fix. */
+  .grid > * {
+    min-width: 0;
+  }
+  button,
+  [role='button'],
+  a,
+  summary {
+    touch-action: manipulation;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+}
+
+@layer components {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Surfaces: flat, hairline border, no heavy shadows. */
+  .card {
+    min-width: 0;
+    max-width: 100%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 1.125rem;
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  /* Form controls. 16px text stops mobile browsers zooming in on focus. */
+  .field {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.4;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      background-color 0.25s ease;
+  }
+  textarea.field {
+    min-height: 5.5rem;
+    resize: vertical;
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted) 75%, transparent);
+  }
+  .field:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Buttons. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    max-width: 100%;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid transparent;
+    border-radius: 0.85rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease,
+      transform 0.12s ease,
+      opacity 0.18s ease;
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-soft {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .btn-danger {
+    background: var(--danger);
+    color: #fff;
+  }
+  @media (hover: hover) {
+    .btn-primary:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+    }
+    .btn-soft:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent-soft) 82%, var(--accent));
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--sunken);
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--danger) 90%, #000);
+    }
+  }
+
+  /* Brand images swap with the theme. */
+  .only-dark {
+    display: none;
+  }
+  :root.dark .only-dark {
+    display: inline-block;
+  }
+  :root.dark .only-light {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ App shell
+ * The shell is pinned to the visible viewport. Only <main class="app-scroll"> scrolls, and the
+ * bottom navigation is a normal flex child below it - so it cannot drift, hide behind browser
+ * chrome or depend on how the WebView computes 100vh.
+ */
+.app-shell {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--paper);
+}
+@media (min-width: 1024px) {
+  .app-shell {
+    flex-direction: row;
+  }
+}
+.app-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Vertical scrolling stays native; horizontal gestures are ours (swipe between pages). */
+  touch-action: pan-y pinch-zoom;
+}
+.bottom-nav {
+  position: relative;
+  flex: none;
+  z-index: 40;
+  background: color-mix(in srgb, var(--card) 96%, transparent);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20%;
+  height: 3px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  transition: transform 0.32s cubic-bezier(0.3, 0.9, 0.3, 1);
+  will-change: transform;
+}
+.nav-indicator > span {
+  display: block;
+  width: 1.75rem;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ Animations
+ * Transform / opacity only. Never touches timers or data. */
+@keyframes st-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes st-sheet-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+}
+@keyframes st-sheet-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+}
+@keyframes st-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes st-dialog-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+@keyframes st-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes st-page-fwd {
+  from {
+    opacity: 0;
+    transform: translate3d(26px, 0, 0);
+  }
+}
+@keyframes st-page-back {
+  from {
+    opacity: 0;
+    transform: translate3d(-26px, 0, 0);
+  }
+}
+@keyframes st-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+}
+@keyframes st-live {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+@keyframes st-check {
+  from {
+    stroke-dashoffset: 30;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.anim-fade {
+  animation: st-fade 0.2s ease-out backwards;
+}
+.anim-pop {
+  animation: st-pop 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.anim-sheet {
+  animation: st-sheet-in 0.28s cubic-bezier(0.2, 0.85, 0.25, 1) backwards;
+}
+.anim-sheet[data-closing='true'] {
+  animation: st-sheet-out 0.2s ease-in forwards;
+}
+.anim-backdrop[data-closing='true'] {
+  animation: st-fade 0.2s ease-in reverse forwards;
+}
+@media (min-width: 640px) {
+  .anim-sheet {
+    animation-name: st-dialog-in;
+  }
+  .anim-sheet[data-closing='true'] {
+    animation-name: st-dialog-out;
+  }
+}
+
+/* Page transitions (direction follows the swipe / tab order). */
+.page-in-fwd {
+  animation: st-page-fwd 0.26s cubic-bezier(0.22, 0.8, 0.3, 1) backwards;
+}
+.page-in-back {
+  animation: st-page-back 0.26s cubic-bezier(0.22, 0.8, 0.3, 1) backwards;
+}
+.page-in {
+  animation: st-fade 0.22s ease-out backwards;
+}
+
+/* Cards settle in one after another (first few only). */
+.stagger > * {
+  animation: st-rise 0.34s cubic-bezier(0.22, 0.8, 0.3, 1) backwards;
+}
+.stagger > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.stagger > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.stagger > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.stagger > :nth-child(5) {
+  animation-delay: 160ms;
+}
+.stagger > :nth-child(n + 6) {
+  animation-delay: 200ms;
+}
+
+/* Running-session indicator. */
+.live-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.4rem;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: st-live 1.8s ease-in-out infinite;
+}
+.check-draw {
+  stroke-dasharray: 30;
+  animation: st-check 0.4s 0.15s ease-out backwards;
+}
+
+/* ------------------------------------------------------------------ Launch splash (index.html) */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--paper, #f7f9f5);
+  transition: opacity 0.5s ease;
+}
+#boot.boot-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Smooth theme switch: applied for a moment by useApplyTheme when the theme actually changes. */
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease,
+    fill 0.28s ease,
+    stroke 0.28s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .live-dot {
+    animation: none;
+  }
+}
